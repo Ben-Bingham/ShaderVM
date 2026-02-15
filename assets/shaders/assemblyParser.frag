@@ -94,20 +94,41 @@ void ExecuteInstruction(Instruction instruction, inout vec4 registers[16]) {
 		case inst_getComponent0:
 			registers[instruction.r2].x = registers[instruction.r1].x;
 			break;
+
 		case inst_getComponent1:
 			registers[instruction.r2].x = registers[instruction.r1].y;
 			break;
+
+		case inst_getComponent2:
+			registers[instruction.r2].x = registers[instruction.r1].z;
+			break;
+
+		case inst_getComponent3:
+			registers[instruction.r2].x = registers[instruction.r1].w;
+			break;
+
 		case inst_reciprocal:
 			registers[instruction.r2].x = 1.0 / registers[instruction.r1].x;
 			break;
+
 		case inst_multiply:
 			registers[instruction.r3].x = registers[instruction.r1].x * registers[instruction.r2].x;
 			break;
+
 		case inst_setComponent0:
 			registers[instruction.r1].x = registers[instruction.r2].x;
 			break;
+
 		case inst_setComponent1:
 			registers[instruction.r1].y = registers[instruction.r2].x;
+			break;
+
+		case inst_setComponent2:
+			registers[instruction.r1].z = registers[instruction.r2].x;
+			break;
+
+		case inst_setComponent3:
+			registers[instruction.r1].w = registers[instruction.r2].x;
 			break;
 	}
 }
