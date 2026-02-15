@@ -51,6 +51,8 @@ Instruction instructions[instructionCount];
 
 vec4 registers[16];
 
+void ExecuteInstruction(Instruction instruction, inout vec4 registers[16]);
+
 void main() {
 	// Build the instructions list:
 	instructions[0] = Instruction(inst_getComponent0, reg_pc, reg_s0, 0, 0.0); // getComponent0(pc, s0) # s0 = pc.x
@@ -68,8 +70,28 @@ void main() {
 	instructions[9] = Instruction(inst_setComponent1, reg_c, reg_s1, 0, 0.0);  // setComponent1(c, s1)  # c.y = s1
 
 	registers[reg_c] = vec4(0.0); // Zero out the color register
+
 	// Execute the instruciton list
-	// TODO
+	for (int i = 0; i < instructionCount; ++i) {
+		ExecuteInstruction(instructions[i], registers);
+	}
 
 	outFragColor = registers[reg_c]; // Assign the final color to the color register
+}
+
+void ExecuteInstruction(Instruction instruction, inout vec4 registers[16]) {
+	switch (instruction.OpCode) {
+		case inst_getComponent0:
+		break;
+		case inst_getComponent1:
+		break;
+		case inst_reciprocal:
+		break;
+		case inst_multiply:
+		break;
+		case inst_setComponent0:
+		break;
+		case inst_setComponent1:
+		break;
+	}
 }
