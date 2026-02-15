@@ -86,6 +86,7 @@ int main() {
 
             assemblyParser.Bind();
             assemblyParser.SetVec3("color", glm::vec3{ 1.0f, 0.0f, 0.0f });
+            assemblyParser.SetVec3("screenSize", glm::vec3{ (float)rendererTarget.GetSize().x, (float)rendererTarget.GetSize().y, 0.0f});
 
             glm::mat4 projection = glm::perspective(glm::radians(camera.fov), (float)rendererTarget.GetSize().x / (float)rendererTarget.GetSize().y, camera.nearPlane, camera.farPlane);
             transform.CalculateMatrix();

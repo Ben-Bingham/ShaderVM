@@ -2,7 +2,11 @@
 
 out vec4 outFragColor;
 
+in vec2 uv;
+
 uniform vec3 color;
+
+uniform vec3 screenSize;
 
 // Registers:
 const int reg_s0 = 0;
@@ -69,7 +73,12 @@ void main() {
 	instructions[8] = Instruction(inst_setComponent0, reg_c, reg_s0, 0, 0.0);  // setComponent0(c, s0)  # c.x = s0
 	instructions[9] = Instruction(inst_setComponent1, reg_c, reg_s1, 0, 0.0);  // setComponent1(c, s1)  # c.y = s1
 
+	// Prepare registers
 	registers[reg_c] = vec4(0.0); // Zero out the color register
+
+	registers[reg_pc] = vec4(uv.x * screenSize.x, uv.y * screenSize.y, 0.0, 0.0);
+	registers[reg_s] = vec4(screenSize.x, screenSize.y, 0.0, 0.0);
+	// TODO time register
 
 	// Execute the instruciton list
 	for (int i = 0; i < instructionCount; ++i) {
@@ -79,6 +88,7 @@ void main() {
 	outFragColor = registers[reg_c]; // Assign the final color to the color register
 }
 
+// TODO modifying read only registers
 void ExecuteInstruction(Instruction instruction, inout vec4 registers[16]) {
 	switch (instruction.OpCode) {
 		case inst_getComponent0:

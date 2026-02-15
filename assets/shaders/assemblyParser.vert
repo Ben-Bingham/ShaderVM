@@ -6,6 +6,10 @@ layout (location = 2) in vec2 inUv;
 
 uniform mat4 mvp;
 
+out vec2 uv;
+
 void main() {
    gl_Position = mvp * vec4(inPos.x, inPos.y, inPos.z, 1.0);
+
+   uv = inUv;
 }
