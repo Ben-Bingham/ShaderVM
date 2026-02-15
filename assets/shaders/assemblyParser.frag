@@ -92,16 +92,22 @@ void main() {
 void ExecuteInstruction(Instruction instruction, inout vec4 registers[16]) {
 	switch (instruction.OpCode) {
 		case inst_getComponent0:
-		break;
+			registers[instruction.r2].x = registers[instruction.r1].x;
+			break;
 		case inst_getComponent1:
-		break;
+			registers[instruction.r2].x = registers[instruction.r1].y;
+			break;
 		case inst_reciprocal:
-		break;
+			registers[instruction.r2].x = 1.0 / registers[instruction.r1].x;
+			break;
 		case inst_multiply:
-		break;
+			registers[instruction.r3].x = registers[instruction.r1].x * registers[instruction.r2].x;
+			break;
 		case inst_setComponent0:
-		break;
+			registers[instruction.r1].x = registers[instruction.r2].x;
+			break;
 		case inst_setComponent1:
-		break;
+			registers[instruction.r1].y = registers[instruction.r2].x;
+			break;
 	}
 }
