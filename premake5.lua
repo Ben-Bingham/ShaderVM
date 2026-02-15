@@ -1,4 +1,4 @@
-workspace "ShaderVM"
+workspace "Shader-Assembly-Language"
 	configurations { "Debug", "Release" }
 	platforms "x64"
 
@@ -12,7 +12,7 @@ workspace "ShaderVM"
 		optimize "On"
 	filter {}
 
-	startproject "ShaderVM"
+	startproject "Shader-Assembly-Language"
 
 	group "3rdParty"
 		include "3rdParty/ImGui"
@@ -21,7 +21,7 @@ workspace "ShaderVM"
 		include "3rdParty/RenderingUtilities"
 	group ""
 
-project "ShaderVM"
+project "Shader-Assembly-Language"
 	kind "ConsoleApp"
 	language "C++"
 
