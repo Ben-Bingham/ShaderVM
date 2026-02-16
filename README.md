@@ -39,22 +39,22 @@ Every program written in Shader Assembly will be executed for each and every pix
 * Two Register (2R): Take in two registers, typically applies an operation to the first and stores the result in the second
 * Register Scaler (RS): Takes in one register and one hardcoded scaler
 
-| Opcode | Type | Implemented? | Instruction | Action |
-|:---:|:---:|:---:|---|---|
-| 00 | 3R | ❌ | add(sA, sB, sC) | Adds sA and sB placing the result in sC |
-| 01 | 3R | ❌ | multiply(sA, sB, sC) | Multiples sA and sB placing the result in sC |
-| 02 | 2R | ❌ | negate(sA, sB) | Negates the value in sA and stores the result in sB |
-| 03 | 2R | ❌ | reciprocal(sA, sB) | Takes the reciprocal of the value in sA and stores the result in sB |
-| 04 | 2R | ❌ | move(sA, sB) | Copies the value stored in sA into sB |
-| 05 | 2R | ❌ | getComponent0(vA, sA) | Gets the 0th component of vA and places it inside of sA |
-| 06 | 2R | ❌ | getComponent1(vA, sA) | Gets the 1st component of vA and places it inside of sA |
-| 07 | 2R | ❌ | getComponent2(vA, sA) | Gets the 2nd component of vA and places it inside of sA |
-| 08 | 2R | ❌ | getComponent3(vA, sA) | Gets the 3rd component of vA and places it inside of sA |
-| 09 | 2R | ❌ | setComponent0(vA, sA) | Sets the 0th component of vA to the value of sA |
-| 10 | 2R | ❌ | setComponent1(vA, sA) | Sets the 1st component of vA to the value of sA |
-| 11 | 2R | ❌ | setComponent2(vA, sA) | Sets the 2nd component of vA to the value of sA |
-| 12 | 2R | ❌ | setComponent3(vA, sA) | Sets the 3rd component of vA to the value of sA |
-| 13 | RS | ❌ | load(sA, scaler) | Assigns the value inside sA to become the value "scaler" |
+| Opcode | Type | Instruction | Action |
+|:---:|:---:|---|---|
+| 00 | 3R | add(sA, sB, sC) | Adds sA and sB placing the result in sC |
+| 01 | 3R | multiply(sA, sB, sC) | Multiples sA and sB placing the result in sC |
+| 02 | 2R | negate(sA, sB) | Negates the value in sA and stores the result in sB |
+| 03 | 2R | reciprocal(sA, sB) | Takes the reciprocal of the value in sA and stores the result in sB |
+| 04 | 2R | move(sA, sB) | Copies the value stored in sA into sB |
+| 05 | 2R | getComponent0(vA, sA) | Gets the 0th component of vA and places it inside of sA |
+| 06 | 2R | getComponent1(vA, sA) | Gets the 1st component of vA and places it inside of sA |
+| 07 | 2R | getComponent2(vA, sA) | Gets the 2nd component of vA and places it inside of sA |
+| 08 | 2R | getComponent3(vA, sA) | Gets the 3rd component of vA and places it inside of sA |
+| 09 | 2R | setComponent0(vA, sA) | Sets the 0th component of vA to the value of sA |
+| 10 | 2R | setComponent1(vA, sA) | Sets the 1st component of vA to the value of sA |
+| 11 | 2R | setComponent2(vA, sA) | Sets the 2nd component of vA to the value of sA |
+| 12 | 2R | setComponent3(vA, sA) | Sets the 3rd component of vA to the value of sA |
+| 13 | RS | load(sA, scaler) | Assigns the value inside sA to become the value "scaler" |
 
 ### Inputs
 Values stored in special read only registers that can be used throughout shader execution
