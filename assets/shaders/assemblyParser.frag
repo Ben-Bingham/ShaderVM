@@ -110,7 +110,7 @@ float memory[64];
 void main() {
 	// Build the instructions list:
 	instructions[0] = Instruction(inst_getComponent, reg_pc, reg_s0, reg_z, 0);  // getComponent(pc, s0)    # s0 = pc.x
-    instructions[1] = Instruction(inst_load, reg_s5, 0, 0, 1);			       // load(s5, 1)             # s5 = 1
+    instructions[1] = Instruction(inst_load, reg_s5, 0, 0, 1);			         // load(s5, 1)             # s5 = 1
 	instructions[2] = Instruction(inst_getComponent, reg_pc, reg_s1, reg_s5, 0); // getComponent(pc, s1)    # s1 = pc.y
 
 	instructions[3] = Instruction(inst_getComponent, reg_s, reg_s3, reg_z, 0);   // getComponent(s, s3, z)  # s3 = s.x
