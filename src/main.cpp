@@ -112,34 +112,34 @@ int main() {
     ebo.Unbind();
 
     // Registers:
-    const int reg_z = 0;
-    const int reg_s0 = 1;
-    const int reg_s1 = 2;
-    const int reg_s2 = 3;
-    const int reg_s3 = 4;
-    const int reg_s4 = 5;
-    const int reg_s5 = 6;
-    const int reg_v0 = 7;
-    const int reg_v1 = 8;
-    const int reg_v2 = 9;
-    const int reg_v3 = 10;
-    const int reg_v4 = 11;
-    const int reg_pc = 12;
-    const int reg_t = 13;
-    const int reg_s = 14;
-    const int reg_c = 15;
+    const unsigned int reg_z = 0;
+    const unsigned int reg_s0 = 1;
+    const unsigned int reg_s1 = 2;
+    const unsigned int reg_s2 = 3;
+    const unsigned int reg_s3 = 4;
+    const unsigned int reg_s4 = 5;
+    const unsigned int reg_s5 = 6;
+    const unsigned int reg_v0 = 7;
+    const unsigned int reg_v1 = 8;
+    const unsigned int reg_v2 = 9;
+    const unsigned int reg_v3 = 10;
+    const unsigned int reg_v4 = 11;
+    const unsigned int reg_pc = 12;
+    const unsigned int reg_t = 13;
+    const unsigned int reg_s = 14;
+    const unsigned int reg_c = 15;
 
     // Op codes:
-    const int inst_add = 0;
-    const int inst_multiply = 1;
-    const int inst_negate = 2;
-    const int inst_reciprocal = 3;
-    const int inst_move = 4;
-    const int inst_getComponent = 5;
-    const int inst_setComponent = 6;
-    const int inst_load = 7;
-    const int inst_readMemory = 8;
-    const int inst_writeMemory = 9;
+    const unsigned int inst_add = 0;
+    const unsigned int inst_multiply = 1;
+    const unsigned int inst_negate = 2;
+    const unsigned int inst_reciprocal = 3;
+    const unsigned int inst_move = 4;
+    const unsigned int inst_getComponent = 5;
+    const unsigned int inst_setComponent = 6;
+    const unsigned int inst_load = 7;
+    const unsigned int inst_readMemory = 8;
+    const unsigned int inst_writeMemory = 9;
 
     instructions.resize(11);
     instructions[0] = Build3R(inst_getComponent, reg_pc, reg_s0, reg_z);  // getComponent(pc, s0)    # s0 = pc.x

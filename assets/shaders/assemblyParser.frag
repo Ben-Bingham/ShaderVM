@@ -9,55 +9,55 @@ uniform vec3 color;
 uniform vec3 screenSize;
 
 // Registers:
-const int reg_z = 0;
-const int reg_s0 = 1; 
-const int reg_s1 = 2; 
-const int reg_s2 = 3; 
-const int reg_s3 = 4; 
-const int reg_s4 = 5; 
-const int reg_s5 = 6; 
-const int reg_v0 = 7; 
-const int reg_v1 = 8; 
-const int reg_v2 = 9; 
-const int reg_v3 = 10; 
-const int reg_v4 = 11; 
-const int reg_pc = 12; 
-const int reg_t = 13;
-const int reg_s = 14;
-const int reg_c = 15;
+const uint reg_z = 0;
+const uint reg_s0 = 1; 
+const uint reg_s1 = 2; 
+const uint reg_s2 = 3; 
+const uint reg_s3 = 4; 
+const uint reg_s4 = 5; 
+const uint reg_s5 = 6; 
+const uint reg_v0 = 7; 
+const uint reg_v1 = 8; 
+const uint reg_v2 = 9; 
+const uint reg_v3 = 10; 
+const uint reg_v4 = 11; 
+const uint reg_pc = 12; 
+const uint reg_t = 13;
+const uint reg_s = 14;
+const uint reg_c = 15;
 
 // Op codes:
-const int inst_add = 0;
-const int inst_multiply = 1;
-const int inst_negate = 2;
-const int inst_reciprocal = 3;
-const int inst_move = 4;
-const int inst_getComponent = 5;
-const int inst_setComponent = 6;
-const int inst_load = 7;
-const int inst_readMemory = 8;
-const int inst_writeMemory = 9;
+const uint inst_add = 0;
+const uint inst_multiply = 1;
+const uint inst_negate = 2;
+const uint inst_reciprocal = 3;
+const uint inst_move = 4;
+const uint inst_getComponent = 5;
+const uint inst_setComponent = 6;
+const uint inst_load = 7;
+const uint inst_readMemory = 8;
+const uint inst_writeMemory = 9;
 
-int GetOpCode(uint instruction) {
-	return int(instruction >> 28);
+uint GetOpCode(uint instruction) {
+	return instruction >> 28;
 }
 
-int GetFirstRegister(uint instruction) {
+uint GetFirstRegister(uint instruction) {
 	uint r1 = instruction << 4;
 
-	return int(r1 >> 28);
+	return r1 >> 28;
 }
 
-int GetSecondRegister(uint instruction) {
+uint GetSecondRegister(uint instruction) {
 	uint r2 = instruction << 8;
 
-	return int(r2 >> 28);
+	return r2 >> 28;
 }
 
-int GetThirdRegister(uint instruction) {
+uint GetThirdRegister(uint instruction) {
 	uint r3 = instruction << 12;
 
-	return int(r3 >> 28);
+	return r3 >> 28;
 }
 
 float GetConstant(uint instruction) {
@@ -99,11 +99,11 @@ void main() {
 
 // TODO modifying read only registers
 void ExecuteInstruction(uint instruction, inout vec4 registers[16]) {
-	int opcode = GetOpCode(instruction);
+	uint opcode = GetOpCode(instruction);
 
-	int r1 = GetFirstRegister(instruction);
-	int r2 = GetSecondRegister(instruction);
-	int r3 = GetThirdRegister(instruction);
+	uint r1 = GetFirstRegister(instruction);
+	uint r2 = GetSecondRegister(instruction);
+	uint r3 = GetThirdRegister(instruction);
 	float constant = GetConstant(instruction);
 
 	switch (opcode) {
@@ -129,29 +129,29 @@ void ExecuteInstruction(uint instruction, inout vec4 registers[16]) {
 
 		case inst_getComponent:
 			float v1 = registers[r3].x;
-			int offset1 = int(floor(v1));
+			uint offset1 = uint(floor(v1));
 			registers[r2].x = registers[r1][offset1];
 			break;
 
 		case inst_setComponent:
 			float v2 = registers[r3].x;
-			int offset2 = int(floor(v2));
+			uint offset2 = uint(floor(v2));
 			registers[r1][offset2] = registers[r2].x;
 			break;
 		
 		case inst_load:
-			registers[r1].x = int(constant);
+			registers[r1].x = uint(constant);
 			break;
 
 		case inst_readMemory:
 			float v3 = registers[r2].x;
-			int offset3 = int(floor(v3));
+			uint offset3 = uint(floor(v3));
 			registers[r1].x = memory[offset3];
 			break;
 			
 		case inst_writeMemory:
 			float v4 = registers[r2].x;
-			int offset4 = int(floor(v4));
+			uint offset4 = uint(floor(v4));
 			memory[offset4] = registers[r1].x;
 			break;
 	}
