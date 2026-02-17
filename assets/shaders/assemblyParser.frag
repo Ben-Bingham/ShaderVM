@@ -43,8 +43,60 @@ struct Instruction {
 	int r1;
 	int r2;
 	int r3;
-	float constant;
+	int constant;
 };
+
+int Build3R(int opcode, int r1, int r2, int r3) {
+	int inst = 0;
+
+	opcode = clamp(opcode, 0, 15);
+	r1 = clamp(r1, 0, 15);
+	r2 = clamp(r2, 0, 15);
+	r3 = clamp(r3, 0, 15);
+
+	inst = opcode << 28;
+
+	inst |= (r1 << 24);
+	inst |= (r2 << 20);
+	inst |= (r3 << 16);
+
+	return inst;
+}
+
+int Build2R(int opcode, int r1, int r2) {
+	int inst = 0;
+
+	opcode = clamp(opcode, 0, 15);
+	r1 = clamp(r1, 0, 15);
+	r2 = clamp(r2, 0, 15);
+
+	inst = opcode << 28;
+
+	inst |= (r1 << 24);
+	inst |= (r2 << 20);
+
+	return inst;
+}
+
+int BuildRS(int opcode, int r1, int constant) {
+	int inst = 0;
+
+	opcode = clamp(opcode, 0, 15);
+	r1 = clamp(r1, 0, 15);
+
+	inst = opcode << 28;
+
+	inst |= (r1 << 24);
+	uint floatAsInt = floatBitsToUint(constant);
+	floatAsInt >> 8;
+
+	int adjustedConstant = constant << 8;
+	adjustedConstant = adjustedConstant >> 8;
+
+	inst |= adjustedConstant;
+
+	return inst;
+}
 
 const int instructionCount = 11;
 Instruction instructions[instructionCount];
@@ -57,20 +109,20 @@ float memory[64];
 
 void main() {
 	// Build the instructions list:
-	instructions[0] = Instruction(inst_getComponent, reg_pc, reg_s0, reg_z, 0.0);  // getComponent(pc, s0)    # s0 = pc.x
-    instructions[1] = Instruction(inst_load, reg_s5, 0, 0, 1.0);			       // load(s5, 1)             # s5 = 1
-	instructions[2] = Instruction(inst_getComponent, reg_pc, reg_s1, reg_s5, 0.0); // getComponent(pc, s1)    # s1 = pc.y
+	instructions[0] = Instruction(inst_getComponent, reg_pc, reg_s0, reg_z, 0);  // getComponent(pc, s0)    # s0 = pc.x
+    instructions[1] = Instruction(inst_load, reg_s5, 0, 0, 1);			       // load(s5, 1)             # s5 = 1
+	instructions[2] = Instruction(inst_getComponent, reg_pc, reg_s1, reg_s5, 0); // getComponent(pc, s1)    # s1 = pc.y
 
-	instructions[3] = Instruction(inst_getComponent, reg_s, reg_s3, reg_z, 0.0);   // getComponent(s, s3, z)  # s3 = s.x
-	instructions[4] = Instruction(inst_reciprocal, reg_s3, reg_s2, 0, 0.0);        // reciprocal(s3, s2)      # s2 = 1 / s3
-	instructions[5] = Instruction(inst_getComponent, reg_s, reg_s4, reg_s5, 0.0);  // getComponent(s, s4, s5) # s4 = s.y
-	instructions[6] = Instruction(inst_reciprocal, reg_s4, reg_s3, 0, 0.0);        // reciprocal(s4, s3)      # s3 = 1 / s4
+	instructions[3] = Instruction(inst_getComponent, reg_s, reg_s3, reg_z, 0);   // getComponent(s, s3, z)  # s3 = s.x
+	instructions[4] = Instruction(inst_reciprocal, reg_s3, reg_s2, 0, 0);        // reciprocal(s3, s2)      # s2 = 1 / s3
+	instructions[5] = Instruction(inst_getComponent, reg_s, reg_s4, reg_s5, 0);  // getComponent(s, s4, s5) # s4 = s.y
+	instructions[6] = Instruction(inst_reciprocal, reg_s4, reg_s3, 0, 0);        // reciprocal(s4, s3)      # s3 = 1 / s4
 
-	instructions[7] = Instruction(inst_multiply, reg_s0, reg_s2, reg_s0, 0.0);     // multiply(s0, s2, s0)    # s0 = s0 * s2
-	instructions[8] = Instruction(inst_multiply, reg_s1, reg_s3, reg_s1, 0.0);     // multiply(s1, s3, s1)    # s1 = s1 * s3
+	instructions[7] = Instruction(inst_multiply, reg_s0, reg_s2, reg_s0, 0);     // multiply(s0, s2, s0)    # s0 = s0 * s2
+	instructions[8] = Instruction(inst_multiply, reg_s1, reg_s3, reg_s1, 0);     // multiply(s1, s3, s1)    # s1 = s1 * s3
 
-	instructions[9] = Instruction(inst_setComponent, reg_c, reg_s0, reg_z, 0.0);   // setComponent(c, s0, z)  # c.x = s0
-	instructions[10] = Instruction(inst_setComponent, reg_c, reg_s1, reg_s5, 0.0); // setComponent(c, s1, s5) # c.y = s1
+	instructions[9] = Instruction(inst_setComponent, reg_c, reg_s0, reg_z, 0);   // setComponent(c, s0, z)  # c.x = s0
+	instructions[10] = Instruction(inst_setComponent, reg_c, reg_s1, reg_s5, 0); // setComponent(c, s1, s5) # c.y = s1
 
 	// Prepare registers
 	registers[reg_z] = vec4(0.0); // Zero out the zero register
@@ -124,7 +176,7 @@ void ExecuteInstruction(Instruction instruction, inout vec4 registers[16]) {
 			break;
 		
 		case inst_load:
-			registers[instruction.r1].x = instruction.constant;
+			registers[instruction.r1].x = int(instruction.constant);
 			break;
 
 		case inst_readMemory:

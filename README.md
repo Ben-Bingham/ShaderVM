@@ -7,8 +7,9 @@ A simple assembly language that is executed inside of a shader, programs created
 Every program written in Shader Assembly will be executed for each and every pixel of the image, it will be made up of instructions that operate on the provided inputs and update the needed outputs.
 
 ### Types
-* Scaler: A floating point number
+* Scaler: A 32 bit IEEE.754 floating point number
 * Vector: Always has four components
+* Integer: An integer
 
 ### Registers
 * s0 -> s5: Scaler registers
@@ -69,7 +70,7 @@ Takes in one register and one hardcoded scaler
 | 04 | 2R | move(sA, sB) | Copies the value stored in sA into sB |
 | 05 | 3R | getComponent(vA, sA, sB) | Gets the floor(sB)'th component of vA and places it inside of sA |
 | 06 | 3R | setComponent(vA, sA, sB) | Sets the floor(sB)'th of vA to the value of sA |
-| 07 | RS | load(sA, scaler) | Assigns the value inside sA to become the value "scaler" |
+| 07 | RS | load(sA, Integer) | Converts Integer to a floating point number (ie: 42 -> 42.0f or 24 -> 24.0f), and assigns sA to that value. |
 | 08 | RS | readMemory(sA, scaler) | Reads the floor(scaler)'th value in memory into sA |
 | 09 | RS | writeMemory(sA, scaler) | Writes the value in sA into the floor(scaler)'th value in memory |
 
