@@ -46,51 +46,49 @@ struct Instruction {
 	int constant;
 };
 
-int Build3R(int opcode, int r1, int r2, int r3) {
-	int inst = 0;
+uint Build3R(int opcode, int r1, int r2, int r3) {
+	uint inst = 0u;
 
 	opcode = clamp(opcode, 0, 15);
 	r1 = clamp(r1, 0, 15);
 	r2 = clamp(r2, 0, 15);
 	r3 = clamp(r3, 0, 15);
 
-	inst = opcode << 28;
+	inst = uint(opcode) << 28;
 
-	inst |= (r1 << 24);
-	inst |= (r2 << 20);
-	inst |= (r3 << 16);
+	inst |= (uint(r1) << 24);
+	inst |= (uint(r2) << 20);
+	inst |= (uint(r3) << 16);
 
 	return inst;
 }
 
-int Build2R(int opcode, int r1, int r2) {
-	int inst = 0;
+uint Build2R(int opcode, int r1, int r2) {
+	uint inst = 0u;
 
 	opcode = clamp(opcode, 0, 15);
 	r1 = clamp(r1, 0, 15);
 	r2 = clamp(r2, 0, 15);
 
-	inst = opcode << 28;
+	inst = uint(opcode) << 28;
 
-	inst |= (r1 << 24);
-	inst |= (r2 << 20);
+	inst |= (uint(r1) << 24);
+	inst |= (uint(r2) << 20);
 
 	return inst;
 }
 
-int BuildRS(int opcode, int r1, int constant) {
-	int inst = 0;
+uint BuildRS(int opcode, int r1, int constant) {
+	uint inst = 0u;
 
 	opcode = clamp(opcode, 0, 15);
 	r1 = clamp(r1, 0, 15);
 
-	inst = opcode << 28;
+	inst = uint(opcode) << 28;
 
-	inst |= (r1 << 24);
-	uint floatAsInt = floatBitsToUint(constant);
-	floatAsInt >> 8;
+	inst |= (uint(r1) << 24);
 
-	int adjustedConstant = constant << 8;
+	uint adjustedConstant = uint(constant) << 8;
 	adjustedConstant = adjustedConstant >> 8;
 
 	inst |= adjustedConstant;
@@ -98,31 +96,61 @@ int BuildRS(int opcode, int r1, int constant) {
 	return inst;
 }
 
+int GetOpCode(uint instruction) {
+	return int(instruction >> 28);
+}
+
+int GetFirstRegister(uint instruction) {
+	uint r1 = instruction << 4;
+
+	return int(r1 >> 28);
+}
+
+int GetSecondRegister(uint instruction) {
+	uint r2 = instruction << 8;
+
+	return int(r2 >> 28);
+}
+
+int GetThirdRegister(uint instruction) {
+	uint r3 = instruction << 12;
+
+	return int(r3 >> 28);
+}
+
+float GetConstant(uint instruction) {
+	uint constant = instruction << 8;
+
+	constant = constant >> 8;
+
+	return float(constant);
+}
+
 const int instructionCount = 11;
-Instruction instructions[instructionCount];
+uint instructions[instructionCount];
 
 vec4 registers[16];
 
-void ExecuteInstruction(Instruction instruction, inout vec4 registers[16]);
+void ExecuteInstruction(uint instruction, inout vec4 registers[16]);
 
 float memory[64];
 
 void main() {
 	// Build the instructions list:
-	instructions[0] = Instruction(inst_getComponent, reg_pc, reg_s0, reg_z, 0);  // getComponent(pc, s0)    # s0 = pc.x
-    instructions[1] = Instruction(inst_load, reg_s5, 0, 0, 1);			         // load(s5, 1)             # s5 = 1
-	instructions[2] = Instruction(inst_getComponent, reg_pc, reg_s1, reg_s5, 0); // getComponent(pc, s1)    # s1 = pc.y
-
-	instructions[3] = Instruction(inst_getComponent, reg_s, reg_s3, reg_z, 0);   // getComponent(s, s3, z)  # s3 = s.x
-	instructions[4] = Instruction(inst_reciprocal, reg_s3, reg_s2, 0, 0);        // reciprocal(s3, s2)      # s2 = 1 / s3
-	instructions[5] = Instruction(inst_getComponent, reg_s, reg_s4, reg_s5, 0);  // getComponent(s, s4, s5) # s4 = s.y
-	instructions[6] = Instruction(inst_reciprocal, reg_s4, reg_s3, 0, 0);        // reciprocal(s4, s3)      # s3 = 1 / s4
-
-	instructions[7] = Instruction(inst_multiply, reg_s0, reg_s2, reg_s0, 0);     // multiply(s0, s2, s0)    # s0 = s0 * s2
-	instructions[8] = Instruction(inst_multiply, reg_s1, reg_s3, reg_s1, 0);     // multiply(s1, s3, s1)    # s1 = s1 * s3
-
-	instructions[9] = Instruction(inst_setComponent, reg_c, reg_s0, reg_z, 0);   // setComponent(c, s0, z)  # c.x = s0
-	instructions[10] = Instruction(inst_setComponent, reg_c, reg_s1, reg_s5, 0); // setComponent(c, s1, s5) # c.y = s1
+	instructions[0] = Build3R(inst_getComponent, reg_pc, reg_s0, reg_z);  // getComponent(pc, s0)    # s0 = pc.x
+    instructions[1] = BuildRS(inst_load, reg_s5, 1);			            // load(s5, 1)             # s5 = 1
+	instructions[2] = Build3R(inst_getComponent, reg_pc, reg_s1, reg_s5); // getComponent(pc, s1)    # s1 = pc.y
+	
+	instructions[3] = Build3R(inst_getComponent, reg_s, reg_s3, reg_z);   // getComponent(s, s3, z)  # s3 = s.x
+	instructions[4] = Build2R(inst_reciprocal, reg_s3, reg_s2);           // reciprocal(s3, s2)      # s2 = 1 / s3
+	instructions[5] = Build3R(inst_getComponent, reg_s, reg_s4, reg_s5);  // getComponent(s, s4, s5) # s4 = s.y
+	instructions[6] = Build2R(inst_reciprocal, reg_s4, reg_s3);           // reciprocal(s4, s3)      # s3 = 1 / s4
+	
+	instructions[7] = Build3R(inst_multiply, reg_s0, reg_s2, reg_s0);     // multiply(s0, s2, s0)    # s0 = s0 * s2
+	instructions[8] = Build3R(inst_multiply, reg_s1, reg_s3, reg_s1);     // multiply(s1, s3, s1)    # s1 = s1 * s3
+	
+	instructions[9] = Build3R(inst_setComponent, reg_c, reg_s0, reg_z);   // setComponent(c, s0, z)  # c.x = s0
+	instructions[10] = Build3R(inst_setComponent, reg_c, reg_s1, reg_s5); // setComponent(c, s1, s5) # c.y = s1
 
 	// Prepare registers
 	registers[reg_z] = vec4(0.0); // Zero out the zero register
@@ -132,7 +160,7 @@ void main() {
 	registers[reg_s] = vec4(screenSize.x, screenSize.y, 0.0, 0.0);
 	// TODO time register
 
-	// Execute the instruciton list
+	// Execute the instruction list
 	for (int i = 0; i < instructionCount; ++i) {
 		ExecuteInstruction(instructions[i], registers);
 	}
@@ -141,54 +169,61 @@ void main() {
 }
 
 // TODO modifying read only registers
-void ExecuteInstruction(Instruction instruction, inout vec4 registers[16]) {
-	switch (instruction.OpCode) {
+void ExecuteInstruction(uint instruction, inout vec4 registers[16]) {
+	int opcode = GetOpCode(instruction);
+
+	int r1 = GetFirstRegister(instruction);
+	int r2 = GetSecondRegister(instruction);
+	int r3 = GetThirdRegister(instruction);
+	float constant = GetConstant(instruction);
+
+	switch (opcode) {
 		case inst_add:
-			registers[instruction.r3].x = registers[instruction.r1].x + registers[instruction.r2].x;
+			registers[r3].x = registers[r1].x + registers[r2].x;
 			break;
 
 		case inst_multiply:
-			registers[instruction.r3].x = registers[instruction.r1].x * registers[instruction.r2].x;
+			registers[r3].x = registers[r1].x * registers[r2].x;
 			break;
 
 		case inst_negate:
-			registers[instruction.r2].x = -registers[instruction.r1].x;
+			registers[r2].x = -registers[r1].x;
 			break;
 
 		case inst_reciprocal:
-			registers[instruction.r2].x = 1.0 / registers[instruction.r1].x;
+			registers[r2].x = 1.0 / registers[r1].x;
 			break;
 
 		case inst_move:
-			registers[instruction.r2].x = registers[instruction.r1].x;
+			registers[r2].x = registers[r1].x;
 			break;
 
 		case inst_getComponent:
-			float v1 = registers[instruction.r3].x;
+			float v1 = registers[r3].x;
 			int offset1 = int(floor(v1));
-			registers[instruction.r2].x = registers[instruction.r1][offset1];
+			registers[r2].x = registers[r1][offset1];
 			break;
 
 		case inst_setComponent:
-			float v2 = registers[instruction.r3].x;
+			float v2 = registers[r3].x;
 			int offset2 = int(floor(v2));
-			registers[instruction.r1][offset2] = registers[instruction.r2].x;
+			registers[r1][offset2] = registers[r2].x;
 			break;
 		
 		case inst_load:
-			registers[instruction.r1].x = int(instruction.constant);
+			registers[r1].x = int(constant);
 			break;
 
 		case inst_readMemory:
-			float v3 = registers[instruction.r2].x;
+			float v3 = registers[r2].x;
 			int offset3 = int(floor(v3));
-			registers[instruction.r1].x = memory[offset3];
+			registers[r1].x = memory[offset3];
 			break;
 			
 		case inst_writeMemory:
-			float v4 = registers[instruction.r2].x;
+			float v4 = registers[r2].x;
 			int offset4 = int(floor(v4));
-			memory[offset4] = registers[instruction.r1].x;
+			memory[offset4] = registers[r1].x;
 			break;
 	}
 }
