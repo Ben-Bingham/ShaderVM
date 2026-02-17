@@ -75,7 +75,7 @@ Takes in one register and one hardcoded scaler
 | 09 | R2 | writeMemory(sA, sB) | Writes the value in sA into the floor(sB)'th value in memory |
 
 ### Inputs
-Values stored in special read only registers that can be used throughout shader execution
+Values stored in special registers that can be used throughout shader execution
 * pc (Vector): The 0th and 1st components store the pixel coordinate of the running program
 * t (Scaler): The time since the start of the program in seconds
 * s (Vector): The 0th and 1st components store the maximum size in pixels of the current screen

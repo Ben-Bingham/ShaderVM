@@ -79,7 +79,6 @@ void ExecuteInstruction(uint instruction, inout vec4 registers[16]);
 
 float memory[64];
 
-// TODO convert everything to uint
 void main() {
 	// Prepare registers
 	registers[reg_z] = vec4(0.0); // Zero out the zero register
@@ -97,7 +96,6 @@ void main() {
 	outFragColor = registers[reg_c]; // Assign the final color to the color register
 }
 
-// TODO modifying read only registers
 void ExecuteInstruction(uint instruction, inout vec4 registers[16]) {
 	uint opcode = GetOpCode(instruction);
 
