@@ -152,5 +152,9 @@ void ExecuteInstruction(uint instruction, inout vec4 registers[16]) {
 			uint offset4 = uint(floor(v4));
 			memory[offset4] = registers[r1].x;
 			break;
+
+		case inst_sign:
+			registers[r2] = sign(registers[r1]);
+			break;
 	}
 }

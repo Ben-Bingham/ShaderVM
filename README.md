@@ -73,6 +73,7 @@ Takes in one register and one hardcoded scaler
 | 07 | RS | load(sA, Integer) | Converts Integer to a floating point number (ie: 42 -> 42.0f or 24 -> 24.0f), and assigns sA to that value. |
 | 08 | R2 | readMemory(sA, sA) | Reads the floor(sB)'th value in memory into sA |
 | 09 | R2 | writeMemory(sA, sB) | Writes the value in sA into the floor(sB)'th value in memory |
+| 10 | 2R | sign(sA, sB) | Determines the sign of sA and stores the result in sB (either 1.0, 0.0, or -1.0) |
 
 ### Inputs
 Values stored in special registers that can be used throughout shader execution

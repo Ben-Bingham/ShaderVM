@@ -35,6 +35,7 @@ const unsigned int inst_setComponent = 6;
 const unsigned int inst_load = 7;
 const unsigned int inst_readMemory = 8;
 const unsigned int inst_writeMemory = 9;
+const unsigned int inst_sign = 10;
 
 unsigned int Build3R(unsigned int opcode, unsigned int r1, unsigned int r2, unsigned int r3) {
     unsigned int inst = 0u;
@@ -97,7 +98,8 @@ unsigned int GetOpcode(std::string operation) {
     if (operation == "load") return inst_load;
     if (operation == "readMemory") return inst_readMemory;
     if (operation == "writeMemory") return inst_writeMemory;
-    
+    if (operation == "sign") return inst_sign;
+
     return 404;
 }
 
@@ -139,7 +141,8 @@ InstructionType GetInstructionType(unsigned int opcode){
         opcode == inst_reciprocal ||
         opcode == inst_move ||
         opcode == inst_readMemory || 
-        opcode == inst_writeMemory) {
+        opcode == inst_writeMemory ||
+        opcode == inst_sign) {
         return InstructionType::R2;
     }
     if (opcode == inst_load) {
