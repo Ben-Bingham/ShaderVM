@@ -92,7 +92,11 @@ std::vector<unsigned int> Compile(std::string code) {
     std::stringstream stream{ code };
     std::string line;
 
+    std::string errorMessage = "";
+    size_t lineNumber = 0;
     while (std::getline(stream, line, '\n')) {
+        ++lineNumber;
+
         // Remove comments
         size_t commentStart = line.find_first_of('#');
         line = line.substr(0, commentStart);
@@ -107,7 +111,21 @@ std::vector<unsigned int> Compile(std::string code) {
 
         if (!foundNonSpace) continue;
 
-        std::cout << line << std::endl;
+        size_t argsStart = line.find_first_of('(');
+        size_t argsEnd = line.find_last_of(')');
+
+        if (argsStart == std::string::npos || argsEnd == std::string::npos) {
+            errorMessage = "Unable to find opening and closing brackets around arguments, format arguments like: (a1, a2, a3).";
+            break;
+        }
+
+        std::string args = line.substr(argsStart + 1, argsEnd - argsStart - 1);
+
+        std::cout << line << ", " << args << std::endl;
+    }
+
+    if (errorMessage != "") {
+        std::cout << "COMPILATION ERROR AT (" << lineNumber << "):\n    " << line << "\n" << errorMessage << std::endl;
     }
 
     instructions.resize(11);
