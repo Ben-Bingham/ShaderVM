@@ -36,49 +36,49 @@ const unsigned int inst_load = 7;
 const unsigned int inst_readMemory = 8;
 const unsigned int inst_writeMemory = 9;
 
-unsigned int Build3R(int opcode, int r1, int r2, int r3) {
+unsigned int Build3R(unsigned int opcode, unsigned int r1, unsigned int r2, unsigned int r3) {
     unsigned int inst = 0u;
 
-    opcode = glm::clamp(opcode, 0, 15);
-    r1 = glm::clamp(r1, 0, 15);
-    r2 = glm::clamp(r2, 0, 15);
-    r3 = glm::clamp(r3, 0, 15);
+    opcode = glm::clamp(opcode, 0u, 15u);
+    r1 = glm::clamp(r1, 0u, 15u);
+    r2 = glm::clamp(r2, 0u, 15u);
+    r3 = glm::clamp(r3, 0u, 15u);
 
-    inst = (unsigned int)opcode << 28;
+    inst = opcode << 28;
 
-    inst |= ((unsigned int)r1 << 24);
-    inst |= ((unsigned int)r2 << 20);
-    inst |= ((unsigned int)r3 << 16);
+    inst |= (r1 << 24);
+    inst |= (r2 << 20);
+    inst |= (r3 << 16);
 
     return inst;
 }
 
-unsigned int Build2R(int opcode, int r1, int r2) {
+unsigned int Build2R(unsigned int opcode, unsigned int r1, unsigned int r2) {
     unsigned int inst = 0u;
 
-    opcode = glm::clamp(opcode, 0, 15);
-    r1 = glm::clamp(r1, 0, 15);
-    r2 = glm::clamp(r2, 0, 15);
+    opcode = glm::clamp(opcode, 0u, 15u);
+    r1 = glm::clamp(r1, 0u, 15u);
+    r2 = glm::clamp(r2, 0u, 15u);
 
-    inst = (unsigned int)opcode << 28;
+    inst = opcode << 28;
 
-    inst |= ((unsigned int)r1 << 24);
-    inst |= ((unsigned int)r2 << 20);
+    inst |= (r1 << 24);
+    inst |= (r2 << 20);
 
     return inst;
 }
 
-unsigned int BuildRS(int opcode, int r1, int constant) {
+unsigned int BuildRS(unsigned int opcode, unsigned int r1, unsigned int constant) {
     unsigned int inst = 0u;
 
-    opcode = glm::clamp(opcode, 0, 15);
-    r1 = glm::clamp(r1, 0, 15);
+    opcode = glm::clamp(opcode, 0u, 15u);
+    r1 = glm::clamp(r1, 0u, 15u);
 
-    inst = (unsigned int)opcode << 28;
+    inst = opcode << 28;
 
-    inst |= ((unsigned int)r1 << 24);
+    inst |= (r1 << 24);
 
-    unsigned int adjustedConstant = (unsigned int)constant << 8;
+    unsigned int adjustedConstant = constant << 8;
     adjustedConstant = adjustedConstant >> 8;
 
     inst |= adjustedConstant;
@@ -120,6 +120,113 @@ unsigned int GetRegister(std::string reg) {
     if (reg == "c") return reg_c;
     
     return 404;
+}
+
+enum class InstructionType {
+    R3,
+    R2,
+    RS
+};
+
+InstructionType GetInstructionType(unsigned int opcode){
+    if (opcode == inst_add ||
+        opcode == inst_multiply ||
+        opcode == inst_getComponent ||
+        opcode == inst_setComponent) {
+        return InstructionType::R3;
+    }
+    if (opcode == inst_negate ||
+        opcode == inst_reciprocal ||
+        opcode == inst_move ||
+        opcode == inst_readMemory || 
+        opcode == inst_writeMemory) {
+        return InstructionType::R2;
+    }
+    if (opcode == inst_load) {
+        return InstructionType::RS;
+    }
+
+    std::cout << "ERROR, COMPILER SHOULD NOT EVER REACH THIS POINT, IF YOU ARE READING THIS YOUR CODE IS BADLY FORMATTED, ASSUME ALL COMPILER OUTPUT IS INVALID." << std::endl;
+    return InstructionType::R3;
+}
+
+std::pair<std::string, unsigned int> ParseInstruction(unsigned int opcode, std::vector<std::string> arguments) {
+    std::string error{ "" };
+    unsigned int instruction{ 0 };
+
+    InstructionType type = GetInstructionType(opcode);
+
+    switch (type) {
+        case InstructionType::R3: {
+            if (arguments.size() != 3) {
+                error = "Incorrect number of arguments passed, this operation expects three different arugments.";
+                break;
+            }
+
+            unsigned int r1 = GetRegister(arguments[0]);
+            if (r1 > 15) {
+                error = "Invalid register given as first argument, please check the spec and ensure that spelling is correct.";
+                break;
+            }
+            unsigned int r2 = GetRegister(arguments[1]);
+            if (r2 > 15) {
+                error = "Invalid register given as second argument, please check the spec and ensure that spelling is correct.";
+                break;
+            }
+            unsigned int r3 = GetRegister(arguments[2]);
+            if (r3 > 15) {
+                error = "Invalid register given as third argument, please check the spec and ensure that spelling is correct.";
+                break;
+            }
+
+            instruction = Build3R(opcode, r1, r2, r3);
+            break;
+        }
+        case InstructionType::R2: {
+            if (arguments.size() != 2) {
+                error = "Incorrect number of arguments passed, this operation expects two different arugments.";
+                break;
+            }
+
+            unsigned int r1 = GetRegister(arguments[0]);
+            if (r1 > 15) {
+                error = "Invalid register given as first argument, please check the spec and ensure that spelling is correct.";
+                break;
+            }
+            unsigned int r2 = GetRegister(arguments[1]);
+            if (r2 > 15) {
+                error = "Invalid register given as second argument, please check the spec and ensure that spelling is correct.";
+                break;
+            }
+
+            instruction = Build2R(opcode, r1, r2);
+            break;
+        }
+        case InstructionType::RS: {
+            if (arguments.size() != 2) {
+                error = "Incorrect number of arguments passed, this operation expects two different arugments.";
+                break;
+            }
+
+            unsigned int r1 = GetRegister(arguments[0]);
+            if (r1 > 15) {
+                error = "Invalid register given as first argument, please check the spec and ensure that spelling is correct.";
+                break;
+            }
+
+            unsigned int constant = std::atoi(arguments[1].c_str());
+
+            if (constant > 0xFFFFFF) {
+                error = "The constant provided is too large, please keep the constant to 24 bits long or smaller.";
+                break;
+            }
+
+            instruction = BuildRS(opcode, r1, constant);
+            break;
+        }
+    }
+
+    return std::make_pair(error, instruction);
 }
 
 // Taken from: https://stackoverflow.com/questions/216823/how-can-i-trim-a-stdstring
@@ -195,28 +302,19 @@ std::vector<unsigned int> Compile(std::string code) {
             cleanArguments.push_back(arg);
         }
 
-        std::cout << line << ", " << opcode << std::endl;
+        auto [e, i] = ParseInstruction(opcode, cleanArguments);
+
+        if (e != "") { 
+            errorMessage = e;
+            break;
+        }
+
+        instructions.push_back(i);
     }
 
     if (errorMessage != "") {
         std::cout << "COMPILATION ERROR AT (" << lineNumber << "):\n    " << line << "\n" << errorMessage << std::endl;
     }
-
-    instructions.resize(11);
-    instructions[0] = Build3R(inst_getComponent, reg_pc, reg_s0, reg_z);  // getComponent(pc, s0)    # s0 = pc.x
-    instructions[1] = BuildRS(inst_load, reg_s5, 1);			          // load(s5, 1)             # s5 = 1
-    instructions[2] = Build3R(inst_getComponent, reg_pc, reg_s1, reg_s5); // getComponent(pc, s1)    # s1 = pc.y
-    
-    instructions[3] = Build3R(inst_getComponent, reg_s, reg_s3, reg_z);   // getComponent(s, s3, z)  # s3 = s.x
-    instructions[4] = Build2R(inst_reciprocal, reg_s3, reg_s2);           // reciprocal(s3, s2)      # s2 = 1 / s3
-    instructions[5] = Build3R(inst_getComponent, reg_s, reg_s4, reg_s5);  // getComponent(s, s4, s5) # s4 = s.y
-    instructions[6] = Build2R(inst_reciprocal, reg_s4, reg_s3);           // reciprocal(s4, s3)      # s3 = 1 / s4
-    
-    instructions[7] = Build3R(inst_multiply, reg_s0, reg_s2, reg_s0);     // multiply(s0, s2, s0)    # s0 = s0 * s2
-    instructions[8] = Build3R(inst_multiply, reg_s1, reg_s3, reg_s1);     // multiply(s1, s3, s1)    # s1 = s1 * s3
-    
-    instructions[9] = Build3R(inst_setComponent, reg_c, reg_s0, reg_z);   // setComponent(c, s0, z)  # c.x = s0
-    instructions[10] = Build3R(inst_setComponent, reg_c, reg_s1, reg_s5); // setComponent(c, s1, s5) # c.y = s1
 
     return instructions;
 }

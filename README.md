@@ -71,8 +71,8 @@ Takes in one register and one hardcoded scaler
 | 05 | 3R | getComponent(vA, sA, sB) | Gets the floor(sB)'th component of vA and places it inside of sA |
 | 06 | 3R | setComponent(vA, sA, sB) | Sets the floor(sB)'th of vA to the value of sA |
 | 07 | RS | load(sA, Integer) | Converts Integer to a floating point number (ie: 42 -> 42.0f or 24 -> 24.0f), and assigns sA to that value. |
-| 08 | RS | readMemory(sA, scaler) | Reads the floor(scaler)'th value in memory into sA |
-| 09 | RS | writeMemory(sA, scaler) | Writes the value in sA into the floor(scaler)'th value in memory |
+| 08 | R2 | readMemory(sA, sA) | Reads the floor(sB)'th value in memory into sA |
+| 09 | R2 | writeMemory(sA, sB) | Writes the value in sA into the floor(sB)'th value in memory |
 
 ### Inputs
 Values stored in special read only registers that can be used throughout shader execution
