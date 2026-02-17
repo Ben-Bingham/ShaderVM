@@ -86,6 +86,57 @@ unsigned int BuildRS(int opcode, int r1, int constant) {
     return inst;
 }
 
+unsigned int GetOpcode(std::string operation) {
+    if (operation == "add") return inst_add;
+    if (operation == "multiply") return inst_multiply;
+    if (operation == "negate") return inst_negate;
+    if (operation == "reciprocal") return inst_reciprocal;
+    if (operation == "move") return inst_move;
+    if (operation == "getComponent") return inst_getComponent;
+    if (operation == "setComponent") return inst_setComponent;
+    if (operation == "load") return inst_load;
+    if (operation == "readMemory") return inst_readMemory;
+    if (operation == "writeMemory") return inst_writeMemory;
+    
+    return 404;
+}
+
+unsigned int GetRegister(std::string reg) {
+    if (reg == "z") return reg_z;
+    if (reg == "s0") return reg_s0;
+    if (reg == "s1") return reg_s1;
+    if (reg == "s2") return reg_s2;
+    if (reg == "s3") return reg_s3;
+    if (reg == "s4") return reg_s4;
+    if (reg == "s5") return reg_s5;
+    if (reg == "v0") return reg_v0;
+    if (reg == "v1") return reg_v1;
+    if (reg == "v2") return reg_v2;
+    if (reg == "v3") return reg_v3;
+    if (reg == "v4") return reg_v4;
+    if (reg == "pc") return reg_pc;
+    if (reg == "t") return reg_t;
+    if (reg == "s") return reg_s;
+    if (reg == "c") return reg_c;
+    
+    return 404;
+}
+
+// Taken from: https://stackoverflow.com/questions/216823/how-can-i-trim-a-stdstring
+// Trim from the start (in place)
+inline void ltrim(std::string& s) {
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char ch) {
+        return !std::isspace(ch);
+    } ));
+}
+
+// Trim from the end (in place)
+inline void rtrim(std::string& s) {
+    s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) {
+        return !std::isspace(ch);
+    } ).base(), s.end());
+}
+
 std::vector<unsigned int> Compile(std::string code) {
     std::vector<unsigned int> instructions;
 
@@ -101,6 +152,7 @@ std::vector<unsigned int> Compile(std::string code) {
         size_t commentStart = line.find_first_of('#');
         line = line.substr(0, commentStart);
 
+        // Clean up empty lines
         bool foundNonSpace = false;
         for (auto c : line) {
             if (!std::isspace(c) && c != '\n') {
@@ -111,6 +163,7 @@ std::vector<unsigned int> Compile(std::string code) {
 
         if (!foundNonSpace) continue;
 
+        // Find operation and args
         size_t argsStart = line.find_first_of('(');
         size_t argsEnd = line.find_last_of(')');
 
@@ -121,7 +174,28 @@ std::vector<unsigned int> Compile(std::string code) {
 
         std::string args = line.substr(argsStart + 1, argsEnd - argsStart - 1);
 
-        std::cout << line << ", " << args << std::endl;
+        std::string operation = line.substr(0, argsStart);
+
+        // Parse Instruction
+        unsigned int opcode = GetOpcode(operation);
+
+        if (opcode == 404) {
+            errorMessage = "Unrecognized operation, please consult the language spec to ensure correct spelling.";
+            break;
+        }
+
+        std::vector<std::string> cleanArguments{ };
+
+        std::stringstream argStringStream{ args };
+        std::string arg;
+        while (std::getline(argStringStream, arg, ',')) {
+            ltrim(arg);
+            rtrim(arg);
+
+            cleanArguments.push_back(arg);
+        }
+
+        std::cout << line << ", " << opcode << std::endl;
     }
 
     if (errorMessage != "") {

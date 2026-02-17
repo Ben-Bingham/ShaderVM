@@ -1,6 +1,6 @@
 getComponent(pc, s0, z)   # s0 = pc.x
 load(s5, 1)               # s5 = 1
-getComponent1(pc, s1, s5) # s1 = pc.y
+getComponent(pc, s1, s5) # s1 = pc.y
 
 getComponent(s, s3, z)    # s3 = s.x
 reciprocal(s3, s2)        # s2 = 1 / s3
