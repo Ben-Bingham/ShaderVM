@@ -49,7 +49,24 @@ setComponent(v0, s0, z)		# v0.x = s0
 load(s5, 1)					# s5 = 1.0
 setComponent(v0, s1, s5)	# v0.y = s1
 
+# Adjust for aspect ratio
+load(s5, 1)					# s5 = 1.0
+getComponent(s, s0, s5)		# s0 = s.y
+reciprocal(s0, s0)			# s0 = 1.0 / s0
+getComponent(s, s1, z)		# s1 = s.x
+multiply(s1, s0, s0)		# s0 = s1 * s0
+getComponent(v0, s1, z)		# s1 = v0.x
+multiply(s1, s0, s0)		# s0 = s1 * s0
+setComponent(v0, s0, z)		# v0.x = s0
 
+# Initialize the ray direction, reuse the uv as the ray direction
+load(s5, 2)					# s5 = 2.0
+load(s4, 1)					# s4 = 1.0
+negate(s4, s4)				# s4 = -s4
+setComponent(v0, s4, s5)	# v0.z = s4
+load(s5, 3)					# s5 = 3.0
+setComponent(v0, z, s5)		# v0.w = 0.0
+	
 
 
 ############### START DEBUG PRINTING
@@ -69,30 +86,15 @@ setComponent(c, s0, s5)
 
 
 
-
-
-
-
-
-## Adjust for aspect ratio
-#load(s5, 1) # s5 = 1.0
-#s0 = registers[reg_s][int(floor(s5))];
-#s0 = 1.0 / s0;
-#s1 = registers[reg_s][int(floor(z))];
-#s0 = s1 * s0;
-#s1 = v0[int(floor(z))];
-#s0 = s1 * s0;
-#v0[int(floor(z))] = s0;
-#	
-## Initialize the ray direction, reuse the uv as the ray direction
-#s5 = 2.0;
-#v0[int(floor(s5))] = -1.0;
-#s5 = 3.0;
-#v0[int(floor(s5))] = z;
-#	
-## Define sphere, s0 is the z coordinate
+# Define sphere, s0 is the z coordinate
 #s0 = 2.0;
 #s0 = -s0;
+
+
+
+
+
+
 #	
 ## Compute a (from quadratic formula), stored in s1
 #s1 = v0[int(floor(z))];

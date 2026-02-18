@@ -90,7 +90,7 @@ void main() {
 	registers[reg_t] = vec4(time, 0.0, 0.0, 0.0);
 
 	// Execute the instruction list
-	for (int i = 0; i < instructionCount; ++i) { // TODO instruction count includes comments
+	for (int i = 0; i < instructionCount; ++i) {
 		ExecuteInstruction(instructions[i], registers);
 	}
 
