@@ -22,6 +22,7 @@
 # discriminant = clamp(discriminant, 0.0, 1.0);
 # outFragColor = vec4(discriminant, discriminant, discriminant, 1.0);
 
+
 # Verbose GLSL version:
 # vec4 uv;
 # uv.x = registers[reg_pc].x;
@@ -64,4 +65,155 @@
 # outFragColor.x = discriminant;
 # outFragColor.y = discriminant;
 # outFragColor.z = discriminant;
+# outFragColor.w = 1.0;
+
+
+# Ultra verbose GLSL version:
+# // Compute uv, store it in v0
+# s0 = registers[reg_pc].x;
+# s1 = registers[reg_pc].y;
+# v0.x = s0;
+# v0.y = s1;
+# v0.z = 0.0;
+# v0.w = 0.0;
+# 
+# s0 = registers[reg_s].x;
+# s1 = registers[reg_s].y;
+# s0 = 1.0 / s0;
+# s1 = 1.0 / s1;
+# 
+# s2 = v0.x;
+# s3 = v0.y;
+# s0 = s2 * s0;
+# s1 = s3 * s1;
+# v0.x = s0;
+# v0.y = s1;
+# 
+# // Adjust the uv to center around the origin
+# // Multiply by 2.0
+# s0 = v0.x;
+# s1 = v0.y;
+# s2 = 2.0;
+# s3 = s0 * s2;
+# s4 = s1 * s2;
+# v0.x = s3;
+# v0.y = s4;
+# 
+# // Subtract 1.0
+# s0 = v0.x;
+# s1 = v0.y;
+# s2 = 1.0;
+# s2 = -s2;
+# s0 = s0 + s2;
+# s1 = s1 + s2;
+# v0.x = s0;
+# v0.y = s1;
+# 
+# // Adjust for aspect ratio
+# s0 = registers[reg_s].y;
+# s0 = 1.0 / s0;
+# s1 = registers[reg_s].x;
+# s0 = s1 * s0;
+# s1 = v0.x;
+# s0 = s1 * s0;
+# v0.x = s0;
+# 
+# // Initialize the ray direction, reuse the uv as the ray direction
+# v0.z = -1.0;
+# v0.w = 0.0;
+# 
+# // Define sphere, s0 is the z coordinate
+# s0 = 2.0;
+# s0 = -s0;
+# 
+# // Compute a (from quadratic formula), stored in s1
+# s1 = v0.x;
+# s1 = s1 * s1;
+# s2 = v0.y;
+# s2 = s2 * s2;
+# s3 = v0.z;
+# s3 = s3 * s3;
+# s1 = s1 + s2;
+# s1 = s1 + s3;
+# 
+# // Compute b (from quadratic formula), stored in s2
+# s2 = 2.0;
+# s2 = -s2;
+# s3 = v0.z;
+# s2 = s2 * s3;
+# s2 = s2 * s0;
+# 
+# // Compute c (from quadratic formula), stored in s3
+# s3 = 1.0;
+# s3 = -s3;
+# s4 = s0 * s0;
+# s3 = s4 + s3;
+# 
+# // Compute discriminant, store in s0
+# s4 = s2 * s2;
+# s5 = 4.0;
+# s5 = s5 * s1;
+# s5 = s5 * s3;
+# s5 = -s5;
+# s0 = s4 + s5;
+# 
+# // Using: max(a, b) = 0.5 * (a + b + |a - b|)
+# 
+# // Clamp discriminant first time
+# // Set s1 = max(s0, 0.0)
+# s1 = sign(s0);
+# s1 = s1 * s0;
+# s1 = s1 + s0;
+# s2 = 2.0;
+# s2 = 1.0 / 2.0;
+# s1 = s2 * s1;
+# 
+# // Set s2 = min(s1, 1.0) = -max(-s1, -1.0)
+# //s0 = -max(-s1, -1.0);
+# s4 = 1.0;
+# s1 = -s1;
+# s3 = s4 + s1;
+# s2 = sign(s3);
+# s2 = s2 * s3;
+# s4 = -s4;
+# s3 = s4 + s2;
+# s3 = s3 + s1;
+# s0 = s3;
+# s0 = -s0;
+# s1 = 2.0;
+# s1 = 1.0 / s1;
+# s0 = s0 * s1;
+# 
+# // Take all values greater then 0, and ensure they are greater then 1
+# s1 = 100.0;
+# s0 = s0 * s1;
+# 
+# // Clamp discriminant second time
+# // Set s1 = max(s0, 0.0)
+# s1 = sign(s0);
+# s1 = s1 * s0;
+# s1 = s1 + s0;
+# s2 = 2.0;
+# s2 = 1.0 / 2.0;
+# s1 = s2 * s1;
+# 
+# // Set s2 = min(s1, 1.0) = -max(-s1, -1.0)
+# //s0 = -max(-s1, -1.0);
+# s4 = 1.0;
+# s1 = -s1;
+# s3 = s4 + s1;
+# s2 = sign(s3);
+# s2 = s2 * s3;
+# s4 = -s4;
+# s3 = s4 + s2;
+# s3 = s3 + s1;
+# s0 = s3;
+# s0 = -s0;
+# s1 = 2.0;
+# s1 = 1.0 / s1;
+# s0 = s0 * s1;
+# 
+# outFragColor.x = s0;
+# outFragColor.y = s0;
+# outFragColor.z = s0;
 # outFragColor.w = 1.0;
