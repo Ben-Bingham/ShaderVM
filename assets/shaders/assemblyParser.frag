@@ -90,8 +90,16 @@ void main() {
 	registers[reg_t] = vec4(time, 0.0, 0.0, 0.0);
 
 	// Execute the instruction list
-	for (int i = 0; i < instructionCount; ++i) {
-		ExecuteInstruction(instructions[i], registers);
+
+	// Need to nest the loops like this to allow the compiler to unroll the inner loops
+	int instructionsPerInnerLoop = 10;
+	int outerLoopRuns = instructionCount / instructionsPerInnerLoop;
+	++outerLoopRuns;
+
+	for (int i = 0; i < outerLoopRuns; ++i) {
+		for (int j = 0; j < instructionsPerInnerLoop; ++j) {
+			ExecuteInstruction(instructions[j + i * instructionsPerInnerLoop], registers);
+		}
 	}
 
 	outFragColor = registers[reg_c]; // Assign the final color to the color register

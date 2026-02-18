@@ -96,8 +96,6 @@ int main() {
     while (!glfwWindowShouldClose(window)) {
         TimeScope frameTimeScope{ &frameTime };
 
-        std::cout << frameTime.count() << std::endl;
-
         glfwPollEvents();
 
         {
